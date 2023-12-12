@@ -1,5 +1,5 @@
-resource "azurerm_service_plan" "librechat" {
-  name                = "librechat-asp${random_string.random_postfix.result}"
+resource "azurerm_service_plan" "ava" {
+  name                = "ava-asp${random_string.random_postfix.result}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   os_type             = "Linux"
@@ -7,11 +7,11 @@ resource "azurerm_service_plan" "librechat" {
   sku_name = var.app_service_sku_name
 }
 
-resource "azurerm_linux_web_app" "librechat" {
-  name                          = "librechatapp${random_string.random_postfix.result}"
+resource "azurerm_linux_web_app" "ava" {
+  name                          = "avaapp${random_string.random_postfix.result}"
   location                      = azurerm_resource_group.this.location
   resource_group_name           = azurerm_resource_group.this.name
-  service_plan_id               = azurerm_service_plan.librechat.id
+  service_plan_id               = azurerm_service_plan.ava.id
   public_network_access_enabled = true
   https_only                    = true
 
@@ -35,7 +35,7 @@ resource "azurerm_linux_web_app" "librechat" {
   app_settings = {
     WEBSITE_RUN_FROM_PACKAGE = "1"
     HOST                     = "0.0.0.0"
-    MONGO_URI                = azurerm_cosmosdb_account.librechat.connection_strings[0]
+    MONGO_URI                = azurerm_cosmosdb_account.ava.connection_strings[0]
     # MONGO_URI                = var.mongo_uri
     OPENAI_API_KEY     = var.openai_key
     MEILI_MASTER_KEY   = random_string.meilisearch_master_key.result
@@ -86,18 +86,18 @@ resource "azurerm_linux_web_app" "librechat" {
     DOCKER_ENABLE_CI                    = false
     WEBSITES_PORT                       = 80
     PORT                                = 80
-    DOCKER_CUSTOM_IMAGE_NAME            = "ghcr.io/danny-avila/librechat-dev-api:latest"
+    DOCKER_CUSTOM_IMAGE_NAME            = "ghcr.io/danny-avila/ava-dev-api:latest"
     NODE_ENV                            = "production"
   }
-  virtual_network_subnet_id = azurerm_subnet.librechat_subnet.id
+  virtual_network_subnet_id = azurerm_subnet.ava_subnet.id
 
-  depends_on = [azurerm_linux_web_app.meilisearch, azurerm_cosmosdb_account.librechat, module.openai]
+  depends_on = [azurerm_linux_web_app.meilisearch, azurerm_cosmosdb_account.ava, module.openai]
   # depends_on = [azurerm_linux_web_app.meilisearch]
 }
 
 #  Deploy code from a public GitHub repo
 # resource "azurerm_app_service_source_control" "sourcecontrol" {
-#   app_id                 = azurerm_linux_web_app.librechat.id
+#   app_id                 = azurerm_linux_web_app.ava.id
 #   repo_url               = "https://github.com/danny-avila/LibreChat"
 #   branch                 = "main"    
 #   type = "Github"
@@ -105,26 +105,26 @@ resource "azurerm_linux_web_app" "librechat" {
 #   # use_manual_integration = true
 #   # use_mercurial          = false
 #   depends_on = [
-#     azurerm_linux_web_app.librechat,
+#     azurerm_linux_web_app.ava,
 #   ]
 # }
 
-# resource "azurerm_app_service_virtual_network_swift_connection" "librechat" {
-#   app_service_id = azurerm_linux_web_app.librechat.id
+# resource "azurerm_app_service_virtual_network_swift_connection" "ava" {
+#   app_service_id = azurerm_linux_web_app.ava.id
 #   subnet_id      = module.vnet.vnet_subnets_name_id["subnet0"]
 
 #   depends_on = [
-#     azurerm_linux_web_app.librechat,
+#     azurerm_linux_web_app.ava,
 #     module.vnet
 #   ]
 # }
 
-#TODO: privately communicate between librechat and meilisearch, right now it is via public internet
+#TODO: privately communicate between ava and meilisearch, right now it is via public internet
 resource "azurerm_linux_web_app" "meilisearch" {
   name                = "meilisearchapp${random_string.random_postfix.result}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
-  service_plan_id     = azurerm_service_plan.librechat.id
+  service_plan_id     = azurerm_service_plan.ava.id
 
   app_settings = {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE = false
@@ -143,7 +143,7 @@ resource "azurerm_linux_web_app" "meilisearch" {
   site_config {
     always_on = "true"
     ip_restriction {
-      virtual_network_subnet_id = azurerm_subnet.librechat_subnet.id
+      virtual_network_subnet_id = azurerm_subnet.ava_subnet.id
       priority                  = 100
       name                      = "Allow from LibreChat subnet"
       action                    = "Allow"

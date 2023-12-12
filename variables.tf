@@ -1,40 +1,40 @@
 variable "location" {
   description = "The location where all resources will be deployed"
-  default     = "westeurope"
+  default     = "eastus"
 }
 
 variable "app_title" {
   description = "The title that librechat will display"
-  default     = "librechat"
+  default     = "AVA_Agape_Virtual_Assistant"
 }
 
 variable "openai_key" {
   description = "OpenAI API Key"
-  default = ""
+  default = "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"
   sensitive = true
 }
 
 variable "chatgpt_token" {
   description = "ChatGPT Token"
-  default = "user_provided"
+  default = ""
   sensitive = true
 }
 
 variable "anthropic_api_key" {
   description = "Anthropic API Key"
-  default = "user_provided"
+  default = ""
   sensitive = true
 }
 
 variable "bingai_token" {
   description = "BingAI Token"
-  default = "user_provided"
+  default = "2afe8b4f87194066a9c10f8d86bfe47b"
   sensitive = true
 }
 
 variable "palm_key" {
   description = "PaLM Key"
-  default = "user_provided"
+  default = ""
   sensitive = true
 }
 
@@ -66,11 +66,11 @@ variable "deployments" {
   }))
   default = {
     "chat_model" = {
-      name = "gpt-35-turbo"
+      name = "gpt-4-32k"
       rai_policy_name = "Microsoft.Default"
-      model_name = "gpt-35-turbo"
+      model_name = "gpt-4-32k"
       model_format = "OpenAI"
-      model_version = "0301"
+      model_version = "2023-07-01-preview"
       scale_type = "Standard"
     },
     "embedding_model" = {
@@ -86,7 +86,7 @@ variable "deployments" {
 
 variable "azure_openai_api_deployment_name" {
   description = "(Optional) The deployment name of your Azure OpenAI API; if deployments.chat_model.name is defined, the default value is that value."
-  default = ""
+  default = "AVA_Agape_Virtual_Assistant"
 }
 
 variable "azure_openai_api_completions_deployment_name" {
@@ -96,7 +96,7 @@ variable "azure_openai_api_completions_deployment_name" {
 
 variable "azure_openai_api_version" {
   description = "The version of your Azure OpenAI API"
-  default = "2023-05-15"
+  default = "2023-07-01-preview"
 }
 
 variable "azure_openai_api_embeddings_deployment_name" {
